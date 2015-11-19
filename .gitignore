@@ -1,0 +1,3 @@
+# Exclude configuration settings (contains API key for OpenWeatherMap)
+
+config.js

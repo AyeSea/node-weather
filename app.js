@@ -1,3 +1,6 @@
+//Require config file containing API key for accessing OpenWeatherMap API
+var config = require('./config')
+
 console.log("\nWelcome to Node Weather!");
 console.log("Please enter your 5 digit zipcode:");
 
@@ -10,11 +13,10 @@ var r1 = readline.createInterface({
 
 var zipcode;
 
-//Listen for user input through the console until a valid 5 digit zipcode is provided.
+//Listen for user input through the console until a valid input is provided (5 digit string)
 r1.on('line', function(userInput) {
 	if ( userInput.match(/^\d{5}$/) ) {
 		zipcode = userInput;
-		console.log("Zipcode successfully received! You entered " + userInput);
 		r1.close();
 	}
 	else {
@@ -22,21 +24,50 @@ r1.on('line', function(userInput) {
 	}
 });
 
+//API call is only made after we get a valid input from the user.
+r1.on('close', function () {
 
+	//Setup HTTP request to OpenWeatherMap's API.
+	var http = require('http');
+	var url_base = "http://api.openweathermap.org/data/2.5/weather?zip=";
+	var url_params = ",us&units=imperial&appid=";
+	//public API key
+	var api_key = config.api_key;
 
-/*
-3. Create an HTTP or HTTPS request to our selected weather API. View their API docs to see how the request should be formatted (i.e. how we pass in the zipcode as an argument).
+	var request = http.get(url_base + zipcode + url_params + api_key, function(response) {
+		var body = "";
 
-4. Create error handling functions depending on various types of errors (user input, connection, status code, any other potential error cases depending on API too)
+		response.on('data', function(chunk) {
+			body += chunk;
+		});
 
-5. Add stream of data event chunk objects to a body variable.
+		response.on('end', function() {
+			if (response.statusCode === 200) {
+				var weatherInfo = JSON.parse(body);
+				//send weatherInfo JSON object to the displayInfo function for printing relevant info to the console
+				displayInfo(weatherInfo);
+			}
+			else {
+				console.log("Uh oh! We couldn't get the weather info for " + zipcode + ": " + http.STATUS_CODES[response.statusCode]);
+			}
+		});
 
-6. Once the streams are completed ('end' event triggered), parse the body variable accordingly (JSON, plaintext?).
+	});
 
-7. Get relevant information from parsed body variable (CURRENT DAY - current temp, hi temp, low temp, chance of rain)
-	a. Once the basics here are working, include other info such as 5 day forecasts, hourly forecasts, etc.
+	request.on('error', function(error) {
+		console.log("Uh oh! An error occurred:\n" + error);
+	});
 
-8. Log the relevant weather info to the console for user viewing.
+})
 
-9. Clean up file by refactoring and moving relevant components into separate files which we can require in our main app.js file (also include module.exports.functionName)
-*/
+//receives a JSON object containing all weather details for the provided zip code
+function displayInfo (weatherInfo) {
+	//extract the basic weather info we want to display to the user (ex. current temp, location name, current weather)
+	var currentTemp = weatherInfo.main.temp;
+	var locationName = weatherInfo.name;
+	var currentWeather = weatherInfo.weather[0].description;
+
+	console.log("\nDetails for " + locationName + ":\n")
+	console.log("Current Temperature: " + currentTemp + "\xB0" + "F");
+	console.log("Weather: " + currentWeather);
+}
