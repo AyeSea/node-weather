@@ -36,7 +36,8 @@ r1.on('line', function(userInput) {
 r1.on('close', function () {
 
 	getRequest(current_weather_url);
-	getRequest(forecast_url, "&cnt=5");
+	//second argument specifies number of days (including current day) for which we're requesting forecast details
+	getRequest(forecast_url, "&cnt=6");
 
 });
 
@@ -90,8 +91,9 @@ function displayCurrentWeather (weatherInfo) {
 };
 
 function displayForecast (weatherInfo) {
-	//parse weatherInfo JSON object for weather info for the next 5 days (temp.day, weather.description)
+	//parse weatherInfo JSON object for weather info for the next 6 days (temp.day, weather.description)
 	var days = weatherInfo.list;
+	days.shift();
 
 	console.log("\n\nForecast for the next " + days.length + " days:\n");
 
