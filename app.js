@@ -2,7 +2,7 @@
 var config = require('./config')
 
 console.log("\nWelcome to Node Weather!");
-console.log("Please enter your 5 digit zipcode:");
+console.log("Please enter your city:");
 
 //Setup the console interface
 var readline = require('readline');
@@ -11,16 +11,16 @@ var r1 = readline.createInterface({
 	output: process.stdout
 });
 
-var zipcode;
+var city;
 
-//Listen for user input through the console until a valid input is provided (5 digit string)
+//Listen for user input through the console until a valid input is provided (1 or more letter characters)
 r1.on('line', function(userInput) {
-	if ( userInput.match(/^\d{5}$/) ) {
-		zipcode = userInput;
+	if ( userInput.match(/^[a-zA-Z]+$/) ) {
+		city = userInput;
 		r1.close();
 	}
 	else {
-		console.log("Input invalid. Please enter a 5 digit zipcode:");
+		console.log("Input invalid. Please enter your city:");
 	}
 });
 
@@ -29,12 +29,12 @@ r1.on('close', function () {
 
 	//Setup HTTP request to OpenWeatherMap's API.
 	var http = require('http');
-	var url_base = "http://api.openweathermap.org/data/2.5/weather?zip=";
+	var url_base = "http://api.openweathermap.org/data/2.5/weather?q=";
 	var url_params = ",us&units=imperial&appid=";
 	//public API key
 	var api_key = config.api_key;
 
-	var request = http.get(url_base + zipcode + url_params + api_key, function(response) {
+	var request = http.get(url_base + city + url_params + api_key, function(response) {
 		var body = "";
 
 		response.on('data', function(chunk) {
@@ -48,7 +48,7 @@ r1.on('close', function () {
 				displayInfo(weatherInfo);
 			}
 			else {
-				console.log("Uh oh! We couldn't get the weather info for " + zipcode + ": " + http.STATUS_CODES[response.statusCode]);
+				console.log("Uh oh! We couldn't get the weather info for " + city + ": " + http.STATUS_CODES[response.statusCode]);
 			}
 		});
 
