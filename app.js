@@ -1,14 +1,18 @@
 //Require config file containing API key for accessing OpenWeatherMap API
-var config = require('./config')
+var config = require('./config');
 
-//Require HTTP module and declare variables needed to make API request
-var http = require('http');
-var url_base = "http://api.openweathermap.org/data/2.5/";
+//Declare variables needed to make API request
+var request_params = {
+	city: "",
+	url_base: "http://api.openweathermap.org/data/2.5/",
+	url_params: "&units=imperial&appid=",
+	api_key: config.api_key
+};
 var current_weather_url = "weather?q=";
 var forecast_url = "forecast/daily?q=";
-var url_params = "&units=imperial&appid=";
-var api_key = config.api_key;
-var city;
+
+//Require custom module to make HTTP requests to OpenWeatherMap API
+var weather_api = require('./weather_api');
 
 //Require Readline module and setup console interface
 var readline = require('readline');
@@ -24,7 +28,7 @@ console.log("Please enter your city:\n");
 //Listen for user input through the console until a valid input is provided (1 or more non-digit characters)
 r1.on('line', function(userInput) {
 	if ( userInput.match(/^\D+$/) ) {
-		city = userInput;
+		request_params.city = userInput;
 		r1.close();
 	}
 	else {
@@ -34,93 +38,6 @@ r1.on('line', function(userInput) {
 
 //API call is only made after we get a valid input from the user.
 r1.on('close', function () {
-
-	getRequest(current_weather_url);
-	//second argument specifies number of days (including current day) for which we're requesting forecast details
-	getRequest(forecast_url, "&cnt=6");
-
+	weather_api.get(request_params, current_weather_url);
+	weather_api.get(request_params, forecast_url);
 });
-
-
-function getRequest (requested_data_url, num_days) {
-	//Setup HTTP request to OpenWeatherMap's API.
-	var requested_data_url = requested_data_url
-	var num_days = num_days || "";
-
-	var request = http.get(url_base + requested_data_url + city + num_days + url_params + api_key, function(response) {
-		var body = "";
-
-		response.on('data', function(chunk) {
-			body += chunk;
-		});
-
-		response.on('end', function() {
-			if (response.statusCode === 200) {
-				var weatherInfo = JSON.parse(body);
-
-				if (requested_data_url === current_weather_url) {
-					displayCurrentWeather(weatherInfo);
-				}
-        else {
-        	displayForecast(weatherInfo);
-        }
-			}
-			else {
-				console.log("Uh oh! We couldn't get the weather info for " + city + ": " + http.STATUS_CODES[response.statusCode]);
-			}
-		});
-
-	});
-
-	request.on('error', function(error) {
-		console.log("Uh oh! An error occurred:\n" + error);
-	});
-
-};
-
-//receives a JSON object containing all weather details for the provided zip code
-function displayCurrentWeather (weatherInfo) {
-	var currentTemp = weatherInfo.main.temp;
-	var locationName = weatherInfo.name;
-	var currentWeather = weatherInfo.weather[0].description;
-
-	console.log("\nCurrently in " + locationName + ":\n")
-	console.log("Temp: " + currentTemp + "\xB0" + "F");
-	console.log("Weather: " + currentWeather);
-};
-
-function displayForecast (weatherInfo) {
-	//parse weatherInfo JSON object for weather info for the next 6 days (temp.day, weather.description)
-	var days = weatherInfo.list;
-	days.shift();
-
-	console.log("\n\nForecast for the next " + days.length + " days:\n");
-
-	for (var i = 0; i < days.length; i++) {
-		var day = days[i];
-		var date = formatDate(day.dt);
-		var temp_hi = day.temp.max;
-		var temp_low = day.temp.min;
-		var weather = day.weather[0].description;
-
-
-		console.log(date + ":");
-		console.log("High Temp: " + temp_hi + "\xB0" + "F");
-		console.log("Low Temp: " + temp_low + "\xB0" + "F");
-		console.log("Weather: " + weather + "\n");
-
-	}
-
-};
-
-function formatDate (unix_timestamp) {
-	//convert from seconds to milliseconds
-	var timestamp = unix_timestamp * 1000;
-	var date = new Date(timestamp);
-
-	var month = date.getMonth() + 1;
-	var day = date.getDate();
-	var year = date.getFullYear();
-
-	return month + "-" + day + "-" + year;
-};
