@@ -78,7 +78,6 @@ function getRequest (requested_data_url, num_days) {
 
 };
 
-
 //receives a JSON object containing all weather details for the provided zip code
 function displayCurrentWeather (weatherInfo) {
 	var currentTemp = weatherInfo.main.temp;
@@ -86,7 +85,7 @@ function displayCurrentWeather (weatherInfo) {
 	var currentWeather = weatherInfo.weather[0].description;
 
 	console.log("\nCurrently in " + locationName + ":\n")
-	console.log("Current Temperature: " + currentTemp + "\xB0" + "F");
+	console.log("Temp: " + currentTemp + "\xB0" + "F");
 	console.log("Weather: " + currentWeather);
 };
 
@@ -100,12 +99,14 @@ function displayForecast (weatherInfo) {
 	for (var i = 0; i < days.length; i++) {
 		var day = days[i];
 		var date = formatDate(day.dt);
-		var temp_noon = day.temp.day;
+		var temp_hi = day.temp.max;
+		var temp_low = day.temp.min;
 		var weather = day.weather[0].description;
 
 
 		console.log(date + ":");
-		console.log("Temperature: " + temp_noon + "\xB0" + "F");
+		console.log("High Temp: " + temp_hi + "\xB0" + "F");
+		console.log("Low Temp: " + temp_low + "\xB0" + "F");
 		console.log("Weather: " + weather + "\n");
 
 	}
