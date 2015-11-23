@@ -7,6 +7,7 @@ var request_params = {
 	api_key: config.api_key,
 	url_weather: ["/conditions/q/",
 							  "/forecast/q/"],
+	state: "",
 	city: "",
 	file_format: ".json"
 };
@@ -23,16 +24,27 @@ var r1 = readline.createInterface({
 
 //Welcome User
 console.log("\nWelcome to Node Weather!");
-console.log("Please enter your city:\n");
+userPrompt();
 
 //Listen for user input through the console until a valid input is provided (1 or more non-digit characters)
+//userInput is updated each time the interface's input stream (in this case process.stdin) receives a \n (Enter)
 r1.on('line', function(userInput) {
-	if ( userInput.match(/^\D+$/) ) {
-		request_params.city = userInput;
+	//split up user input using comma as delimiter
+	var userInput = userInput.split(", ");
+	var city = userInput[0];
+	var state = userInput[1];
+
+	console.log(city);
+	console.log(state);
+
+	if ( city.match(/^\D+$/) && (state.match(/^\D{2}$/)) ) {
+		request_params.city = city;
+		request_params.state = state + "/";
 		r1.close();
 	}
 	else {
-		console.log("Input invalid. Please enter your city:");
+		console.log("\nInput invalid.");
+		userPrompt();
 	}
 });
 
@@ -40,10 +52,15 @@ r1.on('line', function(userInput) {
 r1.on('close', function () {
 	getAllWeather();
 	//after initial API call, a call is sent every hour for updated weather info
-	setInterval(getAllWeather, 60 * 60 * 1000);
+	setInterval(getAllWeather, 30 * 1000);
 });
 
 function getAllWeather () {
 	//2nd param is request flag and specifies the index for url_weather (conditions i.e. current weather, or forecast)
 	weather_api.getForecast(request_params, 0);
 };
+
+function userPrompt () {
+console.log("Please enter your CITY and STATE, separated by a comma:");
+console.log("Ex. New York, NY");
+}
