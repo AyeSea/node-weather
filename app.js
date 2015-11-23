@@ -34,9 +34,6 @@ r1.on('line', function(userInput) {
 	var city = userInput[0];
 	var state = userInput[1];
 
-	console.log(city);
-	console.log(state);
-
 	if ( city.match(/^\D+$/) && (state.match(/^\D{2}$/)) ) {
 		request_params.city = city;
 		request_params.state = state + "/";
@@ -52,7 +49,7 @@ r1.on('line', function(userInput) {
 r1.on('close', function () {
 	getAllWeather();
 	//after initial API call, a call is sent every hour for updated weather info
-	setInterval(getAllWeather, 30 * 1000);
+	setInterval(getAllWeather, 60 * 60 * 1000);
 });
 
 function getAllWeather () {
