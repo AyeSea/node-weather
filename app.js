@@ -40,7 +40,7 @@ r1.on('line', function(userInput) {
 r1.on('close', function () {
 	getAllWeather();
 	//after initial API call, a call is sent every hour for updated weather info
-	setInterval(getAllWeather, 60 * 1000);
+	setInterval(getAllWeather, 60 * 60 * 1000);
 });
 
 function getAllWeather () {
