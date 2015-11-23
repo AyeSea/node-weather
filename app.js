@@ -1,4 +1,4 @@
-//Require config file containing API key for accessing OpenWeatherMap API
+//Require config file containing API key for accessing Wunderground API
 var config = require('./config');
 
 //Declare variables needed to make API request
@@ -11,7 +11,7 @@ var request_params = {
 	file_format: ".json"
 };
 
-//Require custom module to make HTTP requests to OpenWeatherMap API
+//Require custom module to make HTTP requests to Wunderground API
 var weather_api = require('./weather_api');
 
 //Require Readline module and setup console interface
