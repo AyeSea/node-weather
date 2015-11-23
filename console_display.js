@@ -1,16 +1,16 @@
-//receives a JSON object containing all weather details for the provided zip code
-function showCurrentWeather (weatherInfo) {
+function printWeatherNow (weatherInfo) {
+	//parse weatherInfo JSON object and log out current temp and weather
 	var currentTemp = weatherInfo.main.temp;
 	var locationName = weatherInfo.name;
 	var currentWeather = weatherInfo.weather[0].description;
 
 	console.log("\nCurrently in " + locationName + ":\n")
 	console.log("Temp: " + currentTemp + "\xB0" + "F");
-	console.log("Weather: " + currentWeather);
-};
+	console.log("Weather: " + currentWeather);	
+}
 
-function showForecast (weatherInfo) {
-	//parse weatherInfo JSON object for weather info for the next 6 days (temp.day, weather.description)
+function printForecast (weatherInfo) {
+	//parse weatherInfo JSON object for weather info for the next cnt # of days (temp.day, weather.description)
 	var days = weatherInfo.list;
 	days.shift();
 
@@ -23,15 +23,13 @@ function showForecast (weatherInfo) {
 		var temp_low = day.temp.min;
 		var weather = day.weather[0].description;
 
-
 		console.log(date + ":");
 		console.log("High Temp: " + temp_hi + "\xB0" + "F");
 		console.log("Low Temp: " + temp_low + "\xB0" + "F");
 		console.log("Weather: " + weather + "\n");
 
 	}
-
-};
+}
 
 function formatDate (unix_timestamp) {
 	//convert from seconds to milliseconds
@@ -45,5 +43,13 @@ function formatDate (unix_timestamp) {
 	return month + "-" + day + "-" + year;
 };
 
-module.exports.showCurrentWeather = showCurrentWeather;
-module.exports.showForecast = showForecast;
+function printTime () {
+	console.log("#####################")
+	console.log("#   HOURLY UPDATE   #")
+	console.log("#####################")
+	console.log(new Date());
+};
+
+module.exports.printWeatherNow = printWeatherNow;
+module.exports.printForecast = printForecast;
+module.exports.printTime = printTime;

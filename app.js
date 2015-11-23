@@ -3,13 +3,15 @@ var config = require('./config');
 
 //Declare variables needed to make API request
 var request_params = {
-	city: "",
 	url_base: "http://api.openweathermap.org/data/2.5/",
+	url_weather: ["weather?q=",
+							  "forecast/daily?q="],
+	city: "",
+	url_days: ["", 
+	           "&cnt=6"],
 	url_params: "&units=imperial&appid=",
 	api_key: config.api_key
 };
-var current_weather_url = "weather?q=";
-var forecast_url = "forecast/daily?q=";
 
 //Require custom module to make HTTP requests to OpenWeatherMap API
 var weather_api = require('./weather_api');
@@ -38,6 +40,12 @@ r1.on('line', function(userInput) {
 
 //API call is only made after we get a valid input from the user.
 r1.on('close', function () {
-	weather_api.get(request_params, current_weather_url);
-	weather_api.get(request_params, forecast_url);
+	getAllWeather();
+	//after initial API call, a call is sent every hour for updated weather info
+	setInterval(getAllWeather, 60 * 60 * 1000);
 });
+
+function getAllWeather () {
+	//2nd param is request flag and specifies the index for values which are an Array in request_params' key/value pairs
+	weather_api.getForecast(request_params, 0);
+};
