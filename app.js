@@ -3,14 +3,12 @@ var config = require('./config');
 
 //Declare variables needed to make API request
 var request_params = {
-	url_base: "http://api.openweathermap.org/data/2.5/",
-	url_weather: ["weather?q=",
-							  "forecast/daily?q="],
+	url_base: "http://api.wunderground.com/api/",
+	api_key: config.api_key,
+	url_weather: ["/conditions/q/",
+							  "/forecast/q/"],
 	city: "",
-	url_days: ["", 
-	           "&cnt=6"],
-	url_params: "&units=imperial&appid=",
-	api_key: config.api_key
+	file_format: ".json"
 };
 
 //Require custom module to make HTTP requests to OpenWeatherMap API
@@ -42,10 +40,10 @@ r1.on('line', function(userInput) {
 r1.on('close', function () {
 	getAllWeather();
 	//after initial API call, a call is sent every hour for updated weather info
-	setInterval(getAllWeather, 60 * 60 * 1000);
+	setInterval(getAllWeather, 60 * 1000);
 });
 
 function getAllWeather () {
-	//2nd param is request flag and specifies the index for values which are an Array in request_params' key/value pairs
+	//2nd param is request flag and specifies the index for url_weather (conditions i.e. current weather, or forecast)
 	weather_api.getForecast(request_params, 0);
 };

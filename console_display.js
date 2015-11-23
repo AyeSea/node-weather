@@ -1,8 +1,9 @@
 function printWeatherNow (weatherInfo) {
 	//parse weatherInfo JSON object and log out current temp and weather
-	var currentTemp = weatherInfo.main.temp;
-	var locationName = weatherInfo.name;
-	var currentWeather = weatherInfo.weather[0].description;
+	var currentObservation = weatherInfo.current_observation;
+	var currentTemp = currentObservation.temp_f;
+	var locationName = currentObservation.display_location.full;
+	var currentWeather = currentObservation.weather;
 
 	console.log("\nCurrently in " + locationName + ":\n")
 	console.log("Temp: " + currentTemp + "\xB0" + "F");
@@ -11,17 +12,16 @@ function printWeatherNow (weatherInfo) {
 
 function printForecast (weatherInfo) {
 	//parse weatherInfo JSON object for weather info for the next cnt # of days (temp.day, weather.description)
-	var days = weatherInfo.list;
-	days.shift();
+	var days = weatherInfo.forecast.simpleforecast.forecastday;
 
-	console.log("\n\nForecast for the next " + days.length + " days:\n");
+	console.log("\n\nYour Weather Forecast:\n");
 
 	for (var i = 0; i < days.length; i++) {
 		var day = days[i];
-		var date = formatDate(day.dt);
-		var temp_hi = day.temp.max;
-		var temp_low = day.temp.min;
-		var weather = day.weather[0].description;
+		var date = formatDate(day.date.epoch);
+		var temp_hi = day.high.fahrenheit;
+		var temp_low = day.low.fahrenheit;
+		var weather = day.conditions;
 
 		console.log(date + ":");
 		console.log("High Temp: " + temp_hi + "\xB0" + "F");

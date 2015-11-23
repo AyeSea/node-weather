@@ -1,5 +1,5 @@
 # node-weather
-A simple Node.js console application that displays weather information based on user location. Users provide a city name and receive console output showing current weather details and a forecast for the next 5 days. The app makes API requests to the OpenWeatherMap API, and, if you leave it running, will make a new request every hour from the time you first ran the app.
+A simple Node.js console application that displays weather information based on user location. Users provide a city name and receive console output showing current weather details and a forecast for the next several days. The app makes API requests to the OpenWeatherMap API, and, if you leave it running, will make a new request every hour from the time you first ran the app.
 
 Instructions:
 
