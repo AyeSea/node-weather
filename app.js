@@ -22,6 +22,8 @@ var r1 = readline.createInterface({
 	output: process.stdout
 });
 
+var start_time;
+
 //Welcome User
 console.log("\nWelcome to Node Weather!");
 userPrompt();
@@ -32,11 +34,12 @@ r1.on('line', function(userInput) {
 	//split up user input using comma as delimiter
 	var userInput = userInput.split(", ");
 	var city = userInput[0];
-	var state = userInput[1];
+	var state = userInput[1] || "0";
 
 	if ( city.match(/^\D+$/) && (state.match(/^\D{2}$/)) ) {
 		request_params.city = city;
 		request_params.state = state + "/";
+		start_time = new Date().getTime();
 		r1.close();
 	}
 	else {
@@ -50,8 +53,14 @@ r1.on('close', function () {
 	getAllWeather();
 	//after initial API call, a call is sent every hour for updated weather info
 	setInterval(function () {
-		getAllWeather();
-	}, 60 * 60 * 1000);
+		var current_time = new Date().getTime();
+		var elapsed_time = current_time - start_time;
+
+		if (elapsed_time >= (60 * 60 * 1000)) {
+			start = current_time;
+			getAllWeather();
+		} 
+	}, 5 * 60 * 1000);
 });
 
 function getAllWeather () {
