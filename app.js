@@ -57,7 +57,7 @@ r1.on('close', function () {
 		var elapsed_time = current_time - start_time;
 
 		if (elapsed_time >= (60 * 60 * 1000)) {
-			start = current_time;
+			start_time = current_time;
 			getAllWeather();
 		} 
 	}, 5 * 60 * 1000);
